@@ -20,9 +20,9 @@ import lombok.ToString;
 public class User {
 
 	@Id
-	@GeneratedValue
+	@GeneratedValue	
 	private int userId;
-	private String username;
+	private String userName;
 	private String password;
 	private boolean isActive;
 	private String role;// ROLE_USER,ROLE_ADMIN,ROLE_MODERATOR

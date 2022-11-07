@@ -11,13 +11,13 @@ import org.springframework.security.core.userdetails.UserDetails;
 
 public class CustomUserDetails implements UserDetails {
 
-	private String username;
+	private String userName;
 	private String password;
 	private boolean isActive;
 	private List<GrantedAuthority> authorities;
 
 	public CustomUserDetails(User user) {
-		this.username = user.getUsername();
+		this.userName = user.getUserName();
 		this.password = user.getPassword();
 		this.isActive = user.isActive();
 		this.authorities = Arrays.stream(user.getRole().split(",")).map(SimpleGrantedAuthority::new)
@@ -39,7 +39,7 @@ public class CustomUserDetails implements UserDetails {
 	@Override
 	public String getUsername() {
 		// TODO Auto-generated method stub
-		return this.username;
+		return this.userName;
 	}
 
 	@Override

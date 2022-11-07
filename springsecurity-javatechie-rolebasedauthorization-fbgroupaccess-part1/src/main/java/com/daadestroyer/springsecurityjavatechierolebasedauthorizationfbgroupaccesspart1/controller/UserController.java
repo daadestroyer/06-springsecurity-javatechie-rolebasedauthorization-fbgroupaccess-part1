@@ -46,7 +46,7 @@ public class UserController {
 
 		this.userRepo.save(user);
 
-		return "Hi " + user.getUsername() + " welcome to group!";
+		return "Hi " + user.getUserName() + " welcome to group!";
 	}
 
 	// if logged in user is ADMIN -> ADMIN or MODERATOR
@@ -70,7 +70,7 @@ public class UserController {
 		}
 		this.userRepo.save(user);
 
-		return "Hi " + user.getUsername() + " new role assign to you by " + principal.getName();
+		return "Hi " + user.getUserName() + " new role assign to you by " + principal.getName();
 	}
 
 	// getting validating logged in user and getting back that user
