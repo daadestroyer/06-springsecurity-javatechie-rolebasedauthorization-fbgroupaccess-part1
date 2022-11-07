@@ -26,7 +26,6 @@ import com.daadestroyer.springsecurityjavatechierolebasedauthorizationfbgroupacc
 @RequestMapping("/user")
 public class UserController {
 
-	
 	@Autowired
 	private UserRepo userRepo;
 
@@ -55,17 +54,16 @@ public class UserController {
 
 	// ADMIN OR MODERATOR API
 	@GetMapping("/access/{userId}/{userRole}")
-	// @Secured("ROLE_ADMIN")
 	@PreAuthorize("hasAuthority('ROLE_ADMIN') or hasAuthority('ROLE_MODERATOR')")
 	public String changeUserAccess(@PathVariable int userId, @PathVariable String userRole, Principal principal) {
 		// get the user to whom we want to give access
 		User user = this.userRepo.findById(userId).get();
-
+		System.out.println("USER =" + user);
 		// getting roles of logged in user
-		List<String> rolesOfLoggedInUser = this.getRolesByLoggedInUser(principal);
+		List<String> rolesOfLoggedInUser = getRolesByLoggedInUser(principal);
 		String newRole = "";
 		if (rolesOfLoggedInUser.contains(userRole)) {
-			newRole += user.getRole() + "," + userRole;
+			newRole = user.getRole() + "," + userRole;
 			user.setRole(newRole);
 		}
 		this.userRepo.save(user);
@@ -75,12 +73,16 @@ public class UserController {
 
 	// getting validating logged in user and getting back that user
 	private User getLoggedInUser(Principal principal) {
+		User user = this.userRepo.findByUserName(principal.getName()).get();
+
 		return this.userRepo.findByUserName(principal.getName()).get();
 	}
 
 	private List<String> getRolesByLoggedInUser(Principal principal) {
 		// getting logged in user role string
-		String roles = this.getLoggedInUser(principal).getRole();
+		String roles = getLoggedInUser(principal).getRole();
+
+		System.out.println("ROLES OF LOGGED IN USER = " + roles);
 
 		List<String> loggedInUserAssignedRoles = Arrays.stream(roles.split(",")).collect(Collectors.toList());
 
@@ -96,15 +98,16 @@ public class UserController {
 	// ADMIN OR MODERATOR API
 	@GetMapping
 	@Secured("ROLE_ADMIN")
-	// @PreAuthorize("hasAuthority('ROLE_ADMIN')")
+	@PreAuthorize("hasAuthority('ROLE_ADMIN')")
 	public List<User> getAllUser() {
 		return this.userRepo.findAll();
 	}
 
 	// USERS API (part of application)
 	@GetMapping("/test")
-	@Secured("ROLE_USER")
+	@PreAuthorize("hasAuthority('ROLE_USER')")
 	public String testUserAccess() {
 		return "user can only access this api";
 	}
+
 }

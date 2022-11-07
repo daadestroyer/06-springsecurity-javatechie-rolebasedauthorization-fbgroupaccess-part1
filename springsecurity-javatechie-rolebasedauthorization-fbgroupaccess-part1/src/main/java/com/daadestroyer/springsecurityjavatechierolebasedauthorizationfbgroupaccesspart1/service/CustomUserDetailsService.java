@@ -24,6 +24,7 @@ public class CustomUserDetailsService implements UserDetailsService {
 		// we fetched the User object from DB
 		Optional<User> user = this.userRepo.findByUserName(username);
 		 
+		System.out.println("User in DB = "+user);
 		// but we need to return UserDetails object and not User object
 		return user.map(CustomUserDetails::new)
 				.orElseThrow(() -> new UsernameNotFoundException(username + " Not Found"));
