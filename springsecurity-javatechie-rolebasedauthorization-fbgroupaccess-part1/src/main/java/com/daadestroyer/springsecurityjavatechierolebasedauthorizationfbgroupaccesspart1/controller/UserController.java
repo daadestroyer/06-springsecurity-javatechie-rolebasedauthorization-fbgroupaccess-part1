@@ -108,16 +108,17 @@ public class UserController {
 
 	// ADMIN OR MODERATOR API
 	// http://localhost:8080/user/loadAllUser
-	@Secured("ROLE_ADMIN")
+	//@Secured("ROLE_ADMIN")
 	@PreAuthorize("hasAuthority('ROLE_ADMIN')")
 	@GetMapping("/loadAllUser")
 	public List<User> getAllUser() {
-		System.out.println("===FETCHED USER===");
+		System.out.println("===FETCHED	 USER===");
 		System.out.println(userRepo.findAll());
 		return this.userRepo.findAll();
 	}
 
 	// USERS API (part of application)
+	// localhost:8080/user/test
 	@GetMapping("/test")
 	@PreAuthorize("hasAuthority('ROLE_USER')")
 	public String testUserAccess() {
