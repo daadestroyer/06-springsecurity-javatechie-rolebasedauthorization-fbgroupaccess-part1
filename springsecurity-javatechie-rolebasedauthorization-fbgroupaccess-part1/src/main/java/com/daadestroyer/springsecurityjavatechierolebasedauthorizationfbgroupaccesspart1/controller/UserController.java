@@ -54,52 +54,66 @@ public class UserController {
 
 	// ADMIN OR MODERATOR API
 	@GetMapping("/access/{userId}/{userRole}")
+	// @Secured("ROLE_ADMIN")
 	@PreAuthorize("hasAuthority('ROLE_ADMIN') or hasAuthority('ROLE_MODERATOR')")
-	public String changeUserAccess(@PathVariable int userId, @PathVariable String userRole, Principal principal) {
-		// get the user to whom we want to give access
-		User user = this.userRepo.findById(userId).get();
-		System.out.println("USER =" + user);
-		// getting roles of logged in user
-		List<String> rolesOfLoggedInUser = getRolesByLoggedInUser(principal);
+	public String giveAccessToUser(@PathVariable int userId, @PathVariable String userRole, Principal principal) {
+		User user = userRepo.findById(userId).get();
+		
+		List<String> activeRoles = getRolesByLoggedInUser(principal);
+		
+		System.out.println("activeRoles " + activeRoles);
 		String newRole = "";
-		if (rolesOfLoggedInUser.contains(userRole)) {
-			newRole = user.getRole() + "," + userRole;
+		System.out.println("userRole="+userRole);
+		
+		System.out.println(activeRoles.contains(userRole));
+		
+		if (activeRoles.contains(userRole)) {
+			System.out.println("ENTERED....");
+			
+			newRole += user.getRole() + "," + userRole;
+			
+			System.out.println("NEW ROLE = " + newRole);
+			
 			user.setRole(newRole);
 		}
-		this.userRepo.save(user);
-
-		return "Hi " + user.getUserName() + " new role assign to you by " + principal.getName();
+		
+		
+		userRepo.save(user);
+		return "Hi " + user.getUserName() + " New Role assign to you by " + principal.getName();
 	}
 
 	// getting validating logged in user and getting back that user
-	private User getLoggedInUser(Principal principal) {
-		User user = this.userRepo.findByUserName(principal.getName()).get();
-
-		return this.userRepo.findByUserName(principal.getName()).get();
-	}
-
 	private List<String> getRolesByLoggedInUser(Principal principal) {
-		// getting logged in user role string
 		String roles = getLoggedInUser(principal).getRole();
-
+		
 		System.out.println("ROLES OF LOGGED IN USER = " + roles);
-
-		List<String> loggedInUserAssignedRoles = Arrays.stream(roles.split(",")).collect(Collectors.toList());
-
-		if (loggedInUserAssignedRoles.contains("ROLE_ADMIN")) {
+		
+		List<String> assignRoles = Arrays.stream(roles.split(",")).collect(Collectors.toList());
+		
+		
+		if (assignRoles.contains("ROLE_ADMIN")) {
 			return Arrays.stream(UserConstant.ADMIN_ACCESS).collect(Collectors.toList());
-		} else if (loggedInUserAssignedRoles.contains("ROLE_MODERATOR")) {
+		}
+		if (assignRoles.contains("ROLE_MODERATOR")) {
 			return Arrays.stream(UserConstant.MODERATOR_ACCESS).collect(Collectors.toList());
 		}
-
 		return Collections.emptyList();
 	}
 
+	private User getLoggedInUser(Principal principal) {
+		User user = userRepo.findByUserName(principal.getName()).get();
+		System.out.println("LOGGED IN USER = " + user);
+		return userRepo.findByUserName(principal.getName()).get();
+	}
+
 	// ADMIN OR MODERATOR API
-	@GetMapping
+	// http://localhost:8080/user/loadAllUser
 	@Secured("ROLE_ADMIN")
 	@PreAuthorize("hasAuthority('ROLE_ADMIN')")
+	@GetMapping("/loadAllUser")
 	public List<User> getAllUser() {
+		System.out.println("===FETCHED USER===");
+		System.out.println(userRepo.findAll());
 		return this.userRepo.findAll();
 	}
 

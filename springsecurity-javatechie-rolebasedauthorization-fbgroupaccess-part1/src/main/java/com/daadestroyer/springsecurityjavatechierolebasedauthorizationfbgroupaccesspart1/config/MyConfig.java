@@ -20,23 +20,15 @@ public class MyConfig extends WebSecurityConfigurerAdapter {
 	@Autowired
 	private CustomUserDetailsService customUserDetailsService;
 
-	
 	// AUTHORIZATION
 	@Override
 	protected void configure(HttpSecurity http) throws Exception {
-		http.csrf().disable()
-			
-			.authorizeRequests()
-				.antMatchers("/user/join") // this is public API allowing access to all the user
-				.permitAll()
-			.and()
-				.authorizeRequests()
-				.antMatchers("/user/**") // these API need roles (roles based authorization) need MORERATOR or ADMIN rights
-				.authenticated()
-				.and()
-				.httpBasic();
-		
+		http.csrf().disable();
+		http.authorizeRequests().antMatchers("/user/join").permitAll().and().authorizeRequests()
+				.antMatchers("/user/**", "/post/**").authenticated().and().httpBasic();
+
 	}
+
 	// AUTHENTICATION
 	@Override
 	protected void configure(AuthenticationManagerBuilder auth) throws Exception {
