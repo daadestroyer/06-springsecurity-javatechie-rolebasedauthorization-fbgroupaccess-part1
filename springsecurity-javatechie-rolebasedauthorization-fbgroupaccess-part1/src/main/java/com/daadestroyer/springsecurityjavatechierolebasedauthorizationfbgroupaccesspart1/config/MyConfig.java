@@ -31,10 +31,10 @@ public class MyConfig extends WebSecurityConfigurerAdapter {
 				.permitAll()
 			.and()
 				.authorizeRequests()
-				.antMatchers("/user/**") // these API need roles (roles based authorization) need MORERATOR or ADMIN rights
+				.antMatchers("/user/**" , "/post/**") // these API need roles (roles based authorization) need MORERATOR or ADMIN rights
 				.authenticated()
 				.and()
-				.formLogin();
+				.httpBasic();
 		
 	}
 	// AUTHENTICATION
